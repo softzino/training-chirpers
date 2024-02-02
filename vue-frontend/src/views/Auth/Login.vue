@@ -14,29 +14,31 @@ console.log('Axios instance', axios.defaults.baseURL)
 
 const handleSubmit = async () => {
   // handle form submission logic
-  // await csrf();
+  await csrf();
 
-  // const axiosResponse = await axios
-  //     .post('/login', {
-  //       email: email.value,
-  //       password: password.value
-  //     })
-  //     .catch(error => {
-  //
-  //       if (error.response.status !== 422) throw error
-  //
-  //       console.log("ERROR FROM AUTH LOGIN", error.response.data);
-  //
-  //     })
+  const axiosResponse = await axios
+      .post('/login', {
+        email: email.value,
+        password: password.value
+      })
+      .catch(error => {
 
-      const loggedUserReponse = await axios.get('api/user')
-          .catch(error => {
+        if (error.response.status !== 422) throw error
 
-            if (error.response.status !== 422) throw error
+        console.log("ERROR FROM AUTH LOGIN", error.response.data);
 
-            console.log("ERROR FROM AUTH LOGIN", error.response.data);
+      })
 
-          })
+      // const loggedUserReponse = await axios.get('api/user')
+      //     .catch(error => {
+      //
+      //       if (error.response.status !== 422) throw error
+      //
+      //       console.log("ERROR FROM AUTH LOGIN", error.response.data);
+      //
+      //     })
+
+  window.location = '/'
 
   console.log("Login Successful", loggedUserReponse.data);
 };
