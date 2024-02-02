@@ -1,35 +1,45 @@
-import { useState } from 'react'
+import {useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import axios from "./lib/axios.js";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const csrf = async () => axios.get('/sanctum/csrf-cookie')
+    const [form, setForm] = useState({email: '', password: ''})
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const setFormValues = (key, value) => {
+        setForm({...form, [key]: value});
+    }
+
+    const login = async (e) => {
+        e.preventDefault();
+        await csrf()
+
+        const axiosRespons = await axios
+            .post('/login', form)
+            .catch(error => {
+                if (error.response.status !== 422) throw error
+
+                console.error("ERROR  ", error.response.data.errors)
+            })
+
+        setForm({email:'', password: ''})
+
+        console.log("Successfully logged in", axiosRespons)
+    }
+
+    return (
+        <>
+            <div>
+                <form onSubmit={login}>
+                    <input type="email" value={form.email} required onChange={(e) => setFormValues('email', e.target.value)} />
+                    <input type="password" value={form.password} required onChange={(e) => setFormValues('password', e.target.value)} />
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </>
+    )
 }
 
 export default App
